@@ -46,6 +46,7 @@ app.use(express.json());
     try {
       const userCollection = client.db("Assignment-12").collection('users');
       const assetCollection = client.db("Assignment-12").collection('asset');
+      const packageCollection = client.db("Assignment-12").collection('packages');
      
      
  
@@ -109,7 +110,14 @@ app.get('/users/employee/:email',verifyToken ,async(req,res)=>{
   res.send({employee});
 
  })
+    //  package related api
+    app.get('/package',async(req,res)=>{
+      const cursor = packageCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
 
+
+    })
 
       // Connect the client to the server	(optional starting in v4.7)
     //   await client.connect();
