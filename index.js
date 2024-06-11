@@ -52,6 +52,7 @@ app.use(express.json());
       const paymentsCollection = client.db("Assignment-12").collection('payment');
       const requestedAssetCollection = client.db("Assignment-12").collection('requestedAssets');
       const noticeCollection = client.db("Assignment-12").collection('notice');
+      const reviewtCollection = client.db("Assignment-12").collection('review');
       
      
      
@@ -339,6 +340,13 @@ app.get('/users/employee/:email',verifyToken ,async(req,res)=>{
           res.send(result);
         })
 
+
+//  review Data
+app.post('/review',verifyToken,async(req,res)=>{
+  const cursor = req.body;
+  const result = await reviewtCollection.insertOne(cursor);
+  res.send(result);
+})
 
 
       // Connect the client to the server	(optional starting in v4.7)
