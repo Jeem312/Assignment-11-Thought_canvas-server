@@ -250,7 +250,11 @@ app.patch('/updateAssetQuantity/:id',verifyToken, async (req, res) => {
 });
 
 
-
+app.get('/notice',async(req,res)=>{
+  const cursor = noticeCollection.find();
+  const result = await cursor.toArray();
+  res.send(result);
+})
 
 
 
