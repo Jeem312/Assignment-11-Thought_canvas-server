@@ -196,6 +196,21 @@ app.patch('/updateAsset/:id',verifyToken, async(req,res)=>{
     const result = await assetCollection.updateOne(filter,data);
      res.send(result);
 })
+app.patch('/count/:id',verifyToken, async(req,res)=>{
+  const id = req.params.id;
+ 
+  const filter = {_id: new ObjectId(id)};
+  const updatedInfo = req.body;     
+  const data ={
+    $set:{
+      requestedCount:updatedInfo.count,
+      
+      
+    }
+  }
+    const result = await assetCollection.updateOne(filter,data);
+     res.send(result);
+})
   
 
 app.patch('/statusUpdate/:id',verifyToken, async (req, res) => {
@@ -219,7 +234,7 @@ app.patch('/updateAssetQuantity/:id',verifyToken, async (req, res) => {
  
   const filter = {_id: new ObjectId(id)};
   const updatedInfo = req.body;  
-  console.log(updatedInfo) ;  
+  // console.log(updatedInfo) ;  
   const data ={
     $set:{
       
