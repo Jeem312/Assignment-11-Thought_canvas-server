@@ -52,7 +52,7 @@ app.use(express.json());
       const paymentsCollection = client.db("Assignment-12").collection('payment');
       const requestedAssetCollection = client.db("Assignment-12").collection('requestedAssets');
       const noticeCollection = client.db("Assignment-12").collection('notice');
-      const reviewtCollection = client.db("Assignment-12").collection('review');
+      const reviewCollection = client.db("Assignment-12").collection('review');
       
      
      
@@ -344,7 +344,12 @@ app.get('/users/employee/:email',verifyToken ,async(req,res)=>{
 //  review Data
 app.post('/review',verifyToken,async(req,res)=>{
   const cursor = req.body;
-  const result = await reviewtCollection.insertOne(cursor);
+  const result = await reviewCollection.insertOne(cursor);
+  res.send(result);
+})
+app.get('/review',async(req,res)=>{
+  const cursor = reviewCollection.find();
+  const result = await cursor.toArray();
   res.send(result);
 })
 
