@@ -65,7 +65,7 @@ app.use(express.json());
 
     // user related api
      
-    app.post('/user',async(req,res)=>{
+    app.post('/user',verifyToken,async(req,res)=>{
       const userInfo = req.body;
       // console.log('userinfo',userInfo);
       const result = await userCollection.insertOne(userInfo);
