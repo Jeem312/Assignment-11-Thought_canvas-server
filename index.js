@@ -51,6 +51,7 @@ app.use(express.json());
       const packageCollection = client.db("Assignment-12").collection('packages');
       const paymentsCollection = client.db("Assignment-12").collection('payment');
       const requestedAssetCollection = client.db("Assignment-12").collection('requestedAssets');
+      const noticeCollection = client.db("Assignment-12").collection('notice');
       
      
      
@@ -325,6 +326,17 @@ app.get('/users/employee/:email',verifyToken ,async(req,res)=>{
       const result = await cursor.toArray();
       res.send(result);
     })
+
+
+        // notice related api
+        app.post('/notice',async(req,res)=>{
+          const cursor= req.body;
+          const result = await noticeCollection.insertOne(cursor);
+          res.send(result);
+        })
+
+
+
       // Connect the client to the server	(optional starting in v4.7)
     //   await client.connect();
       // Send a ping to confirm a successful connection
