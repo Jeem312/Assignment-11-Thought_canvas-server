@@ -50,9 +50,17 @@ app.use(express.json());
       const assetCollection = client.db("Assignment-12").collection('asset');
       const packageCollection = client.db("Assignment-12").collection('packages');
       const paymentsCollection = client.db("Assignment-12").collection('payment');
+      const requestedAssetCollection = client.db("Assignment-12").collection('requestedAssets');
+      
      
      
  
+      // employee route
+      // app.post('/employee',async(req,res)=>{
+      //   const cursor= req.body;
+      //   const result = await employeeCollection.insertOne(cursor);
+      //   res.send(result);
+      // })
 
 
     // user related api
@@ -69,21 +77,63 @@ app.use(express.json());
       const result = await cursor.toArray();
       res.send(result);
     })
-    app.patch('/users/:email', async(req,res)=>{
+    app.patch('/updateProfile/:email', async(req,res)=>{
       const email = req.params.email;
       
       const filter = {email: email};
-      const updatedInfo = req.body;     
+      const updatedInfo = req.body;  
+      console.log(updatedInfo);   
       const data ={
         $set:{
          Name:updatedInfo.name,
-         Company_logo:updatedInfo. Company_logo,
+         Company_logo:updatedInfo.Company_logo,
+       
         
         }
       }
         const result = await userCollection.updateOne(filter,data);
          res.send(result);
     })
+    app.patch('/users/:email', async(req,res)=>{
+      const email = req.params.email;
+      
+      const filter = {email: email};
+      const updatedInfo = req.body; 
+      console.log(updatedInfo)    
+      const data ={
+        $set:{
+        companyStatus:updatedInfo.companyStatus,
+         Hr_email: updatedInfo.Hr_email,
+         Company_logo:updatedInfo.Company_logo
+       
+        
+        }
+      }
+        const result = await userCollection.updateOne(filter,data);
+         res.send(result);
+    })
+    app.patch('/users/bulk', async (req, res) => {
+      const { members } = req.body;
+  
+    
+          const updatePromises = members.map(member => {
+              return userCollection.updateOne(
+                  { email: member.email },
+                  {
+                      $set: {
+                          Hr_email: member.Hr_email,
+                          companyStatus: member.companyStatus,
+                          Company_logo: member.Company_logo
+                      }
+                  }
+              );
+          });
+  
+       
+  });
+  
+  
+  
      
 // console.log('token',process.env.ACCESS_TOKEN_SECRET)
  // JWT Related api
@@ -101,11 +151,92 @@ app.post('/assets',async(req,res)=>{
   const result = await assetCollection.insertOne(cursor);
   res.send(result);
 })
+app.post('/requestedAsset',async(req,res)=>{
+  const cursor = req.body;
+  const result = await requestedAssetCollection.insertOne(cursor);
+  res.send(result);
+})
 app.get('/assets',async(req,res)=>{
   const cursor = assetCollection.find();
   const result = await cursor.toArray();
   res.send(result);
 })
+app.get('/requestedAssets',async(req,res)=>{
+  const cursor = requestedAssetCollection.find();
+  const result = await cursor.toArray();
+  res.send(result);
+})
+app.delete('/assets/:id',verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await assetCollection.deleteOne(query);
+  res.send(result);
+})
+app.delete('/requestedAsset/:id',verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await requestedAssetCollection.deleteOne(query);
+  res.send(result);
+})
+
+app.patch('/updateAsset/:id', async(req,res)=>{
+  const id = req.params.id;
+ 
+  const filter = {_id: new ObjectId(id)};
+  const updatedInfo = req.body;     
+  const data ={
+    $set:{
+      productType:updatedInfo.productType,
+      productStatus:updatedInfo.productStatus,
+      productQuantity:updatedInfo.productQuantity,
+      productName:updatedInfo. productName,
+      
+    }
+  }
+    const result = await assetCollection.updateOne(filter,data);
+     res.send(result);
+})
+  
+
+app.patch('/statusUpdate/:id', async (req, res) => {
+  const id = req.params.id;
+ 
+  const filter = {_id: new ObjectId(id)};
+  const updatedInfo = req.body;     
+  const data ={
+    $set:{
+      status:updatedInfo.status
+      
+    }
+  }
+    const result = await requestedAssetCollection.updateOne(filter,data);
+     res.send(result);
+});
+
+
+app.patch('/updateAssetQuantity/:id', async (req, res) => {
+  const id = req.params.id;
+ 
+  const filter = {_id: new ObjectId(id)};
+  const updatedInfo = req.body;  
+  console.log(updatedInfo) ;  
+  const data ={
+    $set:{
+      
+      productQuantity:updatedInfo.quanity,
+    
+      
+    }
+  }
+    const result = await assetCollection.updateOne(filter,data);
+     res.send(result);
+  
+});
+
+
+
+
+
 
 // role related api
 app.get('/users/hr/:email',verifyToken ,async(req,res)=>{
@@ -163,9 +294,16 @@ app.get('/users/employee/:email',verifyToken ,async(req,res)=>{
       })
      })
     app.post('/payments',async(req,res)=>{
-      const user = req.body;
-      const payment = await paymentsCollection.insertOne(user);
-      res.send(payment);
+      const payment = req.body;
+      const result = await paymentsCollection.insertOne(payment);
+      const {email, members_count}=payment;
+      const updateMember = await userCollection.updateOne(
+        {email},
+        {
+          $inc:{ members_count:members_count}
+        }
+      )
+      res.send(result);
     })
     app.get('/payments',async(req,res)=>{
       const cursor = paymentsCollection.find();
