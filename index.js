@@ -77,7 +77,7 @@ app.use(express.json());
       const result = await cursor.toArray();
       res.send(result);
     })
-    app.patch('/updateProfile/:email', async(req,res)=>{
+    app.patch('/updateProfile/:email',verifyToken, async(req,res)=>{
       const email = req.params.email;
       
       const filter = {email: email};
@@ -94,7 +94,7 @@ app.use(express.json());
         const result = await userCollection.updateOne(filter,data);
          res.send(result);
     })
-    app.patch('/users/:email', async(req,res)=>{
+    app.patch('/users/:email',verifyToken, async(req,res)=>{
       const email = req.params.email;
       
       const filter = {email: email};
@@ -146,12 +146,12 @@ app.use(express.json());
   res.send({ token });
 })
 // asset related api
-app.post('/assets',async(req,res)=>{
+app.post('/assets',verifyToken,async(req,res)=>{
   const cursor = req.body;
   const result = await assetCollection.insertOne(cursor);
   res.send(result);
 })
-app.post('/requestedAsset',async(req,res)=>{
+app.post('/requestedAsset',verifyToken,async(req,res)=>{
   const cursor = req.body;
   const result = await requestedAssetCollection.insertOne(cursor);
   res.send(result);
@@ -179,7 +179,7 @@ app.delete('/requestedAsset/:id',verifyToken, async (req, res) => {
   res.send(result);
 })
 
-app.patch('/updateAsset/:id', async(req,res)=>{
+app.patch('/updateAsset/:id',verifyToken, async(req,res)=>{
   const id = req.params.id;
  
   const filter = {_id: new ObjectId(id)};
@@ -198,7 +198,7 @@ app.patch('/updateAsset/:id', async(req,res)=>{
 })
   
 
-app.patch('/statusUpdate/:id', async (req, res) => {
+app.patch('/statusUpdate/:id',verifyToken, async (req, res) => {
   const id = req.params.id;
  
   const filter = {_id: new ObjectId(id)};
@@ -214,7 +214,7 @@ app.patch('/statusUpdate/:id', async (req, res) => {
 });
 
 
-app.patch('/updateAssetQuantity/:id', async (req, res) => {
+app.patch('/updateAssetQuantity/:id',verifyToken, async (req, res) => {
   const id = req.params.id;
  
   const filter = {_id: new ObjectId(id)};
