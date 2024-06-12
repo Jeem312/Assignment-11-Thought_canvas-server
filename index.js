@@ -1,26 +1,18 @@
-const express = require('express');
 require('dotenv').config();
+const express = require('express');
 
+const app = express();
+const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
-const cors = require('cors');
-const app = express();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_kEY);
+
+
+
 const port = process.env.PORT || 5000;
 
-app.use(cors(
-  {
-    origin:[
-      'http://localhost:5173',
-      'https://assignment-12-f1692.web.app',
-      'https://assignment-12-f1692.web.app'
-      
-
-    ],
-  
-  }
-));
+app.use(cors());
 app.use(express.json());
 
 
@@ -78,14 +70,14 @@ app.use(express.json());
 
     // user related api
      
-    app.post('/user',verifyToken,async(req,res)=>{
+    app.post('/user',async(req,res)=>{
       const userInfo = req.body;
       // console.log('userinfo',userInfo);
       const result = await userCollection.insertOne(userInfo);
     
       res.send(result);
      })
-     app.get('/users',verifyToken,async(req,res)=>{
+     app.get('/users',async(req,res)=>{
       const cursor = userCollection.find();
       const result = await cursor.toArray();
       res.send(result);
@@ -159,12 +151,12 @@ app.use(express.json());
   res.send({ token });
 })
 // asset related api
-app.post('/assets',verifyToken,async(req,res)=>{
+app.post('/assets',async(req,res)=>{
   const cursor = req.body;
   const result = await assetCollection.insertOne(cursor);
   res.send(result);
 })
-app.post('/requestedAsset',verifyToken,async(req,res)=>{
+app.post('/requestedAsset',async(req,res)=>{
   const cursor = req.body;
   const result = await requestedAssetCollection.insertOne(cursor);
   res.send(result);
@@ -179,13 +171,13 @@ app.get('/requestedAssets',async(req,res)=>{
   const result = await cursor.toArray();
   res.send(result);
 })
-app.delete('/assets/:id',verifyToken, async (req, res) => {
+app.delete('/assets/:id', async (req, res) => {
   const id = req.params.id;
   const query = { _id: new ObjectId(id) };
   const result = await assetCollection.deleteOne(query);
   res.send(result);
 })
-app.delete('/requestedAsset/:id',verifyToken, async (req, res) => {
+app.delete('/requestedAsset/:id',async (req, res) => {
   const id = req.params.id;
   const query = { _id: new ObjectId(id) };
   const result = await requestedAssetCollection.deleteOne(query);
@@ -209,7 +201,7 @@ app.patch('/updateAsset/:id', async(req,res)=>{
     const result = await assetCollection.updateOne(filter,data);
      res.send(result);
 })
-app.patch('/count/:id',verifyToken, async(req,res)=>{
+app.patch('/count/:id', async(req,res)=>{
   const id = req.params.id;
  
   const filter = {_id: new ObjectId(id)};
@@ -226,7 +218,7 @@ app.patch('/count/:id',verifyToken, async(req,res)=>{
 })
   
 
-app.patch('/statusUpdate/:id',verifyToken, async (req, res) => {
+app.patch('/statusUpdate/:id', async (req, res) => {
   const id = req.params.id;
  
   const filter = {_id: new ObjectId(id)};
@@ -242,7 +234,7 @@ app.patch('/statusUpdate/:id',verifyToken, async (req, res) => {
 });
 
 
-app.patch('/updateAssetQuantity/:id',verifyToken, async (req, res) => {
+app.patch('/updateAssetQuantity/:id', async (req, res) => {
   const id = req.params.id;
  
   const filter = {_id: new ObjectId(id)};
@@ -262,7 +254,7 @@ app.patch('/updateAssetQuantity/:id',verifyToken, async (req, res) => {
 });
 
 
-app.get('/notice',verifyToken,async(req,res)=>{
+app.get('/notice',async(req,res)=>{
   const cursor = noticeCollection.find();
   const result = await cursor.toArray();
   res.send(result);
@@ -313,9 +305,9 @@ app.get('/users/employee/:email',verifyToken ,async(req,res)=>{
      //  payment intend
      app.post('/create-payment-intend',async(req,res)=>{
       const {price} = req.body;
-      // console.log(req.body);                                                                                                     
+      console.log(req.body);                                                                                                     
       const amount = parseInt(price * 100);
-      // console.log('amount',amount);
+      console.log('amount',amount);
       const paymentIntent = await stripe.paymentIntents.create({
         amount:amount,
         currency: 'usd',
@@ -353,7 +345,7 @@ app.get('/users/employee/:email',verifyToken ,async(req,res)=>{
 
 
 //  review Data
-app.post('/review',verifyToken,async(req,res)=>{
+app.post('/review',async(req,res)=>{
   const cursor = req.body;
   const result = await reviewCollection.insertOne(cursor);
   res.send(result);
