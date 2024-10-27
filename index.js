@@ -278,21 +278,29 @@ app.get('/users/hr/:email',verifyToken ,async(req,res)=>{
   res.send({hr});
 
  })
-app.get('/users/employee/:email',verifyToken ,async(req,res)=>{
+ app.get('/users/employee/:email', verifyToken, async (req, res) => {
   const email = req.params.email;
-  if(email !== req.decoded.email){
-    return res.status(403).send({message: 'forbidden access'})
+  
+  // Check decoded email match
+  if (email !== req.decoded.email) {
+    return res.status(403).send({ message: 'forbidden access' });
   }
-  const query = {email:email};
-  const user = await userCollection.findOne(query);
-  let employee = false;
-  if (user){
-    employee = user?.role === 'Employee';
-    
-  }
-  res.send({employee});
 
- })
+  // Retrieve user data
+  const query = { email: email };
+  const user = await userCollection.findOne(query);
+  console.log("User data:", user); // Debugging step
+
+  // Determine employee status
+  let employee = false;
+  if (user) {
+    employee = user.role === 'Employee';
+    console.log("Is Employee:", employee); // Debugging step
+  }
+
+  res.send({ employee });
+});
+
     //  package related api
     app.get('/package',async(req,res)=>{
       const cursor = packageCollection.find();
